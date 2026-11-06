@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    function isUnverifiedSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'name', 'grade', 'avatarUrl', 'avatarId', 'gems', 'coins', 'streakDays', 'avgQuizScore', 'language']) &&
+             data.keys().hasAny(['id', 'name', 'grade', 'avatarUrl', 'avatarId', 'gems', 'coins', 'streakDays', 'avgQuizScore', 'language', 'school', 'district', 'state', 'completedTopicsCount', 'totalTopicsCount', 'topicsMastered', 'isNewUser']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.grade is string && data.grade.size() <= 20 &&
+             data.avatarUrl is string && data.avatarUrl.size() <= 500 &&
+             data.avatarId is string && data.avatarId.size() <= 100 &&
+             data.gems is number &&
+             data.coins is number &&
+             data.streakDays is number &&
+             data.avgQuizScore is number &&
+             data.language is string && data.language.size() <= 10 &&
+             (!('school' in data) || (data.school is string && data.school.size() <= 100)) &&
+             (!('district' in data) || (data.district is string && data.district.size() <= 100)) &&
+             (!('state' in data) || (data.state is string && data.state.size() <= 100)) &&
+             (!('completedTopicsCount' in data) || data.completedTopicsCount is number) &&
+             (!('totalTopicsCount' in data) || data.totalTopicsCount is number) &&
+             (!('topicsMastered' in data) || data.topicsMastered is number) &&
+             (!('isNewUser' in data) || data.isNewUser is bool);
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isSignedIn() && request.auth.uid == userId;
+      allow create: if isValidId(userId) && isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidUser(incoming()) &&
+                       incoming().id == request.auth.uid;
+      allow update: if isValidId(userId) && isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidUser(incoming()) &&
+                       incoming().id == existing().id &&
+                       incoming().id == request.auth.uid;
+      allow delete: if false; // Users shouldn't be deleted directly here
+    }
+  }
+}

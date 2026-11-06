@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user profile in the application.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The user ID (matches the document ID)."
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "grade": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "school": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "district": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "avatarUrl": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "avatarId": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "gems": {
+          "type": "number"
+        },
+        "coins": {
+          "type": "number"
+        },
+        "streakDays": {
+          "type": "number"
+        },
+        "completedTopicsCount": {
+          "type": "number"
+        },
+        "totalTopicsCount": {
+          "type": "number"
+        },
+        "topicsMastered": {
+          "type": "number"
+        },
+        "avgQuizScore": {
+          "type": "number"
+        },
+        "language": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "isNewUser": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "grade",
+        "avatarUrl",
+        "avatarId",
+        "gems",
+        "coins",
+        "streakDays",
+        "avgQuizScore",
+        "language"
+      ]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "User profiles"
+    }
+  }
+}

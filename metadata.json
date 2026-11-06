@@ -1,0 +1,6 @@
+{
+  "name": "GyanFlow",
+  "description": "Personalized adaptive learning platform bridging rural-urban education gaps with vernacular support, offline sync, adaptive assessments, and teacher analytics.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
